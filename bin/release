@@ -11,7 +11,7 @@ cat << EOF
 {
   "addons": [],
   "default_process_types": {
-    "web": "brave-browser --no-sandbox --headless"
+    "web": "$HOME/.brave-for-testing/brave-browser-${BRAVE_BROWSER_VERSION}-linux-amd64/brave-browser --no-sandbox --headless"
   },
   "config_vars": {
     "BRAVE_BROWSER_VERSION": "The version of Brave Browser to install"
