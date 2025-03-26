@@ -44,31 +44,18 @@ fi
 # Install dependencies first
 source "$BUILDPACK_DIR/bin/install-brave-dependencies"
 
-# Add Brave Browser repository
-echo "Adding Brave Browser repository" | indent
-mkdir -p "$BUILD_DIR/.apt/etc/apt/keyrings"
-mkdir -p "$BUILD_DIR/.apt/etc/apt/sources.list.d"
-
-# Download and add the GPG key
-curl -fsSL https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg -o "$BUILD_DIR/.apt/etc/apt/keyrings/brave-browser-archive-keyring.gpg"
-
-# Add the repository
-echo "deb [signed-by=$BUILD_DIR/.apt/etc/apt/keyrings/brave-browser-archive-keyring.gpg] https://brave-browser-apt-release.s3.brave.com/ stable main" > "$BUILD_DIR/.apt/etc/apt/sources.list.d/brave-browser-release.list"
-
-# Configure apt to use our custom directory
-APT_OPTIONS="-o dir::etc=$BUILD_DIR/.apt/etc/apt -o dir::cache=$CACHE_DIR/apt/cache -o dir::state=$CACHE_DIR/apt/state"
-
-# Download Brave Browser package
+# Download Brave Browser package directly
 echo "Downloading Brave Browser package" | indent
 mkdir -p "$CACHE_DIR/apt/archives"
-apt-get $APT_OPTIONS -y --force-yes -d install --reinstall --no-install-recommends brave-browser
+BRAVE_VERSION="1.64.109"  # You can make this configurable via ENV_DIR if needed
+BRAVE_URL="https://laptop-updates.brave.com/latest/linux-x64"
+BRAVE_DEB="$CACHE_DIR/apt/archives/brave-browser.deb"
+
+curl -fsSL "$BRAVE_URL" -o "$BRAVE_DEB"
 
 # Install Brave Browser package
 echo "Installing Brave Browser package" | indent
-for DEB in $(ls -1 $CACHE_DIR/apt/archives/*.deb); do
-  echo "Installing $(basename $DEB)" | indent
-  dpkg -x $DEB $BUILD_DIR/.apt/
-done
+dpkg -x "$BRAVE_DEB" "$BUILD_DIR/.apt/"
 
 # Copy Brave Browser executable to our custom directory
 echo "Copying Brave Browser executable" | indent
