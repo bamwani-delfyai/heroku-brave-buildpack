@@ -86,6 +86,8 @@ echo "export PATH=\$HOME/.brave-for-testing/brave-linux64:\$PATH" >> "$BUILD_DIR
 
 # Verify the executable is present
 export PATH="$BUILD_DIR/.brave-for-testing/brave-linux64:$PATH"
+echo "Verifying Brave Browser executable" | indent
 which brave | indent
+echo brave-browser --version | indent
 
 echo "Brave Browser installation complete" | indent 
