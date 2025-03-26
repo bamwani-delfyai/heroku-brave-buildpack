@@ -51,26 +51,23 @@ BRAVE_VERSION="1.76.81"
 BRAVE_URL="https://github.com/brave/brave-browser/releases/download/v${BRAVE_VERSION}/brave-browser-${BRAVE_VERSION}-linux-amd64.zip"
 ZIP_LOCATION="$INSTALL_DIR/brave.zip"
 
-# Download with better error handling and verification
+# Download with verbose output
 echo "Downloading from: ${BRAVE_URL}" | indent
-if ! curl --silent --show-error --fail --retry 3 --retry-delay 2 --retry-connrefused --connect-timeout 10 -L -o "${ZIP_LOCATION}" "${BRAVE_URL}"; then
-    error "Failed to download Brave Browser"
-fi
+curl --verbose --location --fail --retry 3 --retry-delay 2 --retry-connrefused --connect-timeout 10 -o "${ZIP_LOCATION}" "${BRAVE_URL}" 2>&1 | indent
 
-# Verify the downloaded file exists and has content
-if [[ ! -f "${ZIP_LOCATION}" ]]; then
-    error "Download failed: zip file not found"
-fi
+# Check file size and show contents of directory
+echo "Checking downloaded file..." | indent
+ls -lh "${ZIP_LOCATION}" | indent
+echo "Install directory contents:" | indent
+ls -la "$INSTALL_DIR" | indent
 
-if [[ ! -s "${ZIP_LOCATION}" ]]; then
-    error "Download failed: zip file is empty"
-fi
-
-# Try to unzip with verbose output for debugging
+# Try to unzip with verbose output
 echo "Extracting Brave Browser" | indent
-if ! unzip -q -o "$ZIP_LOCATION" -d "$INSTALL_DIR"; then
-    error "Failed to extract Brave Browser. The downloaded file might be corrupted."
-fi
+unzip -v "$ZIP_LOCATION" -d "$INSTALL_DIR" | indent
+
+# Show contents after extraction
+echo "Contents after extraction:" | indent
+ls -la "$INSTALL_DIR" | indent
 
 rm -f "$ZIP_LOCATION"
 
@@ -79,9 +76,17 @@ echo "Adding executables to PATH" | indent
 mkdir -p "$BUILD_DIR/.profile.d"
 echo "export PATH=\$HOME/.brave-for-testing/brave-browser-${BRAVE_VERSION}-linux-amd64:\$PATH" >> "$BUILD_DIR/.profile.d/brave-for-testing.sh"
 
-# Verify the executable is present
+# Show the profile script contents
+echo "Profile script contents:" | indent
+cat "$BUILD_DIR/.profile.d/brave-for-testing.sh" | indent
+
+# Verify the executable is present with full path information
+echo "Checking executable location:" | indent
+find "$INSTALL_DIR" -name "brave-browser" | indent
 export PATH="$BUILD_DIR/.brave-for-testing/brave-browser-${BRAVE_VERSION}-linux-amd64:$PATH"
-which brave-browser | indent
-brave-browser --version 2>/dev/null | indent || true
+which brave-browser | indent || echo "brave-browser not found in PATH" | indent
+
+echo "Current PATH:" | indent
+echo "$PATH" | indent
 
 echo "Brave Browser installation complete" | indent 
