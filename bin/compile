@@ -3,8 +3,8 @@
 
 set -e
 
-BUILD_DIR=$1
-CACHE_DIR=$2
+BUILD_DIR=/app
+CACHE_DIR=/cache
 
 # Create necessary directories
 mkdir -p "$BUILD_DIR/.brave-for-testing/brave-linux64"
