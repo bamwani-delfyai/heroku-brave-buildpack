@@ -1,0 +1,19 @@
+[buildpack]
+id = "heroku/brave-browser"
+version = "0.1.0"
+name = "Brave Browser"
+description = "Installs Brave Browser for headless automation"
+keywords = ["brave", "browser", "automation"]
+licenses = ["MIT"]
+
+[[stacks]]
+id = "heroku-20"
+
+[[stacks]]
+id = "heroku-22"
+
+[[stacks]]
+id = "heroku-24"
+
+[metadata]
+include-files = ["bin/", "buildpack.toml"] 

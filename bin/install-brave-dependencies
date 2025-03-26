@@ -167,4 +167,4 @@ export PKG_CONFIG_PATH="$BUILD_DIR/.apt/usr/lib/x86_64-linux-gnu/pkgconfig:$BUIL
 #give environment to later buildpacks
 export | grep -E -e ' (PATH|LD_LIBRARY_PATH|LIBRARY_PATH|INCLUDE_PATH|CPATH|CPPPATH|PKG_CONFIG_PATH)='  > "$BUILDPACK_DIR/export"
 
-echo "Installed Brave Browser dependencies for $STACK" | indent 
+echo "Installed Brave Browser dependencies for $STACK" | indent
