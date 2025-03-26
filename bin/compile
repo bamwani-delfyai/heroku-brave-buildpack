@@ -46,9 +46,8 @@ source "$BUILDPACK_DIR/bin/install-brave-dependencies"
 
 # Download Brave Browser package directly
 echo "Downloading Brave Browser package" | indent
-mkdir -p "$CACHE_DIR/apt/archives"
-BRAVE_VERSION="1.64.109"  # You can make this configurable via ENV_DIR if needed
-BRAVE_URL="https://laptop-updates.brave.com/latest/linux-x64"
+mkdir -p "$CACHE_DIR/apt/archives" # You can make this configurable via ENV_DIR if needed
+BRAVE_URL="https://github.com/brave/brave-browser/releases/download/v1.76.81/brave-browser_1.76.81_amd64.deb"
 BRAVE_DEB="$CACHE_DIR/apt/archives/brave-browser.deb"
 
 curl -fsSL "$BRAVE_URL" -o "$BRAVE_DEB"
