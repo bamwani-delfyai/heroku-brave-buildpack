@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# bin/release <build-dir>
+
+# This script provides information about the buildpack to Heroku.
+# It should output a JSON object with the following keys:
+# - addons: Array of addons to be installed
+# - default_process_types: Object mapping process types to commands
+# - config_vars: Object mapping config var names to their descriptions
+
+cat << EOF
+{
+  "addons": [],
+  "default_process_types": {
+    "web": "brave-browser --no-sandbox --headless"
+  },
+  "config_vars": {
+    "BRAVE_BROWSER_VERSION": "The version of Brave Browser to install"
+  }
+}
+EOF 

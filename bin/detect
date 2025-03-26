@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# bin/detect <build-dir>
+
+# This script determines if this buildpack should be used for the given application.
+# It should exit with code 0 if the buildpack is applicable, and 1 otherwise.
+
+# For Brave Browser, we'll check if the application has a package.json
+# that includes brave-browser or similar dependencies
+
+if [ -f "$1/package.json" ]; then
+  echo "Brave Browser Buildpack"
+  exit 0
+else
+  echo "no"
+  exit 1
+fi 
