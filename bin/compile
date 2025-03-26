@@ -51,8 +51,27 @@ BRAVE_VERSION="1.76.81"
 BRAVE_URL="https://github.com/brave/brave-browser/releases/download/v${BRAVE_VERSION}/brave-browser-${BRAVE_VERSION}-linux-amd64.zip"
 ZIP_LOCATION="$INSTALL_DIR/brave.zip"
 
-curl --silent --show-error --fail --retry 3 --retry-connrefused --connect-timeout 10 -o "${ZIP_LOCATION}" "${BRAVE_URL}" | indent
-unzip -q -o "$ZIP_LOCATION" -d "$INSTALL_DIR" | indent
+# Download with better error handling and verification
+echo "Downloading from: ${BRAVE_URL}" | indent
+if ! curl --silent --show-error --fail --retry 3 --retry-delay 2 --retry-connrefused --connect-timeout 10 -L -o "${ZIP_LOCATION}" "${BRAVE_URL}"; then
+    error "Failed to download Brave Browser"
+fi
+
+# Verify the downloaded file exists and has content
+if [[ ! -f "${ZIP_LOCATION}" ]]; then
+    error "Download failed: zip file not found"
+fi
+
+if [[ ! -s "${ZIP_LOCATION}" ]]; then
+    error "Download failed: zip file is empty"
+fi
+
+# Try to unzip with verbose output for debugging
+echo "Extracting Brave Browser" | indent
+if ! unzip -q -o "$ZIP_LOCATION" -d "$INSTALL_DIR"; then
+    error "Failed to extract Brave Browser. The downloaded file might be corrupted."
+fi
+
 rm -f "$ZIP_LOCATION"
 
 # Add Brave Browser to the PATH
