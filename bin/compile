@@ -10,18 +10,18 @@ CACHE_DIR=/cache
 mkdir -p "$BUILD_DIR/.brave-for-testing/brave-linux64"
 
 # Install curl if not present
-apt-get update
-apt-get install -y curl
+sudo apt-get update
+sudo apt-get install -y curl
 
 # Add Brave Browser repository
 echo "Adding Brave Browser repository..."
-curl -fsSLo /usr/share/keyrings/brave-browser-archive-keyring.gpg https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg
-echo "deb [signed-by=/usr/share/keyrings/brave-browser-archive-keyring.gpg] https://brave-browser-apt-release.s3.brave.com/ stable main" | tee /etc/apt/sources.list.d/brave-browser-release.list
+sudo curl -fsSLo /usr/share/keyrings/brave-browser-archive-keyring.gpg https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg
+echo "deb [signed-by=/usr/share/keyrings/brave-browser-archive-keyring.gpg] https://brave-browser-apt-release.s3.brave.com/ stable main" | sudo tee /etc/apt/sources.list.d/brave-browser-release.list
 
 # Install Brave Browser and dependencies
 echo "Installing Brave Browser and dependencies..."
-apt-get update
-apt-get install -y \
+sudo apt-get update
+sudo apt-get install -y \
     brave-browser \
     libasound2 \
     libatk-bridge2.0-0 \
@@ -61,7 +61,7 @@ apt-get install -y \
 
 # Copy Brave Browser executable to our custom directory
 echo "Copying Brave Browser executable..."
-cp /usr/bin/brave-browser "$BUILD_DIR/.brave-for-testing/brave-linux64/brave"
+sudo cp /usr/bin/brave-browser "$BUILD_DIR/.brave-for-testing/brave-linux64/brave"
 
 # Create a wrapper script to launch Brave Browser
 cat > "$BUILD_DIR/.brave-for-testing/brave-linux64/brave-wrapper" << 'EOF'
