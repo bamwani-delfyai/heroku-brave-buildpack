@@ -46,8 +46,9 @@ source "$BUILDPACK_DIR/bin/install-brave-dependencies"
 
 # Download Brave Browser package directly
 echo "Downloading Brave Browser package" | indent
-mkdir -p "$CACHE_DIR/apt/archives" # You can make this configurable via ENV_DIR if needed
-BRAVE_URL="https://github.com/brave/brave-browser/releases/download/v1.76.81/brave-browser_1.76.81_amd64.deb"
+mkdir -p "$CACHE_DIR/apt/archives"
+BRAVE_VERSION="1.76.81"
+BRAVE_URL="https://github.com/brave/brave-browser/releases/download/v${BRAVE_VERSION}/brave-browser_${BRAVE_VERSION}_amd64.deb"
 BRAVE_DEB="$CACHE_DIR/apt/archives/brave-browser.deb"
 
 curl -fsSL "$BRAVE_URL" -o "$BRAVE_DEB"
@@ -56,10 +57,17 @@ curl -fsSL "$BRAVE_URL" -o "$BRAVE_DEB"
 echo "Installing Brave Browser package" | indent
 dpkg -x "$BRAVE_DEB" "$BUILD_DIR/.apt/"
 
+# Find the actual path of the brave-browser executable
+echo "Locating Brave Browser executable" | indent
+BRAVE_EXECUTABLE=$(find "$BUILD_DIR/.apt" -name "brave-browser" -type f | head -n 1)
+if [ -z "$BRAVE_EXECUTABLE" ]; then
+  error "Could not find brave-browser executable in extracted package"
+fi
+
 # Copy Brave Browser executable to our custom directory
 echo "Copying Brave Browser executable" | indent
 mkdir -p "$INSTALL_DIR/brave-linux64"
-cp "$BUILD_DIR/.apt/usr/bin/brave-browser" "$INSTALL_DIR/brave-linux64/brave"
+cp "$BRAVE_EXECUTABLE" "$INSTALL_DIR/brave-linux64/brave"
 
 # Create a wrapper script to launch Brave Browser
 cat > "$INSTALL_DIR/brave-linux64/brave-wrapper" << 'EOF'
