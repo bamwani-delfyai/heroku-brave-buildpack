@@ -46,48 +46,23 @@ source "$BUILDPACK_DIR/bin/install-brave-dependencies"
 
 # Download Brave Browser package directly
 echo "Downloading Brave Browser package" | indent
-mkdir -p "$CACHE_DIR/apt/archives"
+mkdir -p "$INSTALL_DIR"
 BRAVE_VERSION="1.76.81"
-BRAVE_URL="https://github.com/brave/brave-browser/releases/download/v${BRAVE_VERSION}/brave-browser_${BRAVE_VERSION}_amd64.deb"
-BRAVE_DEB="$CACHE_DIR/apt/archives/brave-browser.deb"
+BRAVE_URL="https://github.com/brave/brave-browser/releases/download/v${BRAVE_VERSION}/brave-browser-${BRAVE_VERSION}-linux-amd64.zip"
+ZIP_LOCATION="$INSTALL_DIR/brave.zip"
 
-curl -fsSL "$BRAVE_URL" -o "$BRAVE_DEB"
-
-# Install Brave Browser package
-echo "Installing Brave Browser package" | indent
-dpkg -x "$BRAVE_DEB" "$BUILD_DIR/.apt/"
-
-# Find the actual path of the brave-browser executable
-echo "Locating Brave Browser executable" | indent
-BRAVE_EXECUTABLE=$(find "$BUILD_DIR/.apt" -name "brave-browser" -type f | head -n 1)
-if [ -z "$BRAVE_EXECUTABLE" ]; then
-  error "Could not find brave-browser executable in extracted package"
-fi
-
-# Copy Brave Browser executable to our custom directory
-echo "Copying Brave Browser executable" | indent
-mkdir -p "$INSTALL_DIR/brave-linux64"
-cp "$BRAVE_EXECUTABLE" "$INSTALL_DIR/brave-linux64/brave"
-
-# Create a wrapper script to launch Brave Browser
-cat > "$INSTALL_DIR/brave-linux64/brave-wrapper" << 'EOF'
-#!/bin/bash
-export DISPLAY=:99
-Xvfb :99 -screen 0 1280x1024x24 > /dev/null 2>&1 &
-exec "$(dirname "$0")/brave" "$@"
-EOF
-
-chmod +x "$INSTALL_DIR/brave-linux64/brave-wrapper"
+curl --silent --show-error --fail --retry 3 --retry-connrefused --connect-timeout 10 -o "${ZIP_LOCATION}" "${BRAVE_URL}" | indent
+unzip -q -o "$ZIP_LOCATION" -d "$INSTALL_DIR" | indent
+rm -f "$ZIP_LOCATION"
 
 # Add Brave Browser to the PATH
 echo "Adding executables to PATH" | indent
 mkdir -p "$BUILD_DIR/.profile.d"
-echo "export PATH=\$HOME/.brave-for-testing/brave-linux64:\$PATH" >> "$BUILD_DIR/.profile.d/brave-for-testing.sh"
+echo "export PATH=\$HOME/.brave-for-testing/brave-browser-${BRAVE_VERSION}-linux-amd64:\$PATH" >> "$BUILD_DIR/.profile.d/brave-for-testing.sh"
 
 # Verify the executable is present
-export PATH="$BUILD_DIR/.brave-for-testing/brave-linux64:$PATH"
-echo "Verifying Brave Browser executable" | indent
-which brave | indent
+export PATH="$BUILD_DIR/.brave-for-testing/brave-browser-${BRAVE_VERSION}-linux-amd64:$PATH"
+which brave-browser | indent
 brave-browser --version 2>/dev/null | indent || true
 
 echo "Brave Browser installation complete" | indent 
